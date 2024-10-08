@@ -30,7 +30,7 @@ Options:
 
 ### Examples
 ```sh
-$ t --message Work --duration 30m --break_duration 10m --no_long_break
+$ t --message Work --duration 30m --break-duration 10m --no-long-break
 ```
 
 OR
