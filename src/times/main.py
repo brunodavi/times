@@ -1,61 +1,136 @@
 import time
 
-from plyer import notification
+from times.lib import duration_to_seconds, timedelta
 
-from times.cli import get_args
-from times.lib import convert_to_seconds
-
-
-def main(args = None):
-    if args is None:
-        args = get_args()
+import click
 
 
-    def auto_pause():
-        if not args.auto_start:
-            input("Press [ Enter ] to continue...")
+def print_message(message: str, current_cycle: int, cycles: int, rest_time: str, bg='red'):
+    cycle_message = click.style(f" {current_cycle}/{cycles} ", fg='black', bg='yellow', bold=True)
+    time_message = click.style(f" {rest_time} ", fg='white', bg='blue', bold=True)
+    task_message = click.style(f' {message} ', fg='black', bg=bg, bold=True)
+
+    click.echo(f"\r{cycle_message}{time_message}{task_message}", nl=False)
 
 
-    def notify(title: str):
-        if args.verbose: print(f'{title=}')
-        notification.notify(
-            title,
-            app_name='times',
-            timeout=3
-        )
+def countdown(duration: str, print_message: callable):
+    duration_seconds = duration_to_seconds(duration)
+
+    for rest in range(duration_seconds, 0, -1):
+        rest_time = str(timedelta(seconds=rest))
+        print_message(rest_time)
+        time.sleep(1)
+
+    print_message('0:00:00')
+
+    click.echo()
 
 
-    def wait(duration: str):
-        time.sleep(
-            convert_to_seconds(duration)
-        )
+@click.command(name='t')
+@click.option(
+    '-m', '--message',
+    default='Focus on your task',
+    help='Message to display during the task'
+)
+@click.option(
+    '-c', '--cycles',
+    default=1,
+    type=int,
+    help='Number of pomodoro cycles'
+)
+@click.option(
+    '-d', '--duration',
+    default='25m',
+    help='Task duration'
+)
+@click.option(
+    '-b', '--break-duration',
+    default='5m',
+    help='Duration of the short break'
+)
+@click.option(
+    '-B', '--break-message',
+    default='Give yourself a break',
+    help='Message to display during the short break'
+)
+@click.option(
+    '-l', '--long-duration',
+    default='10m',
+    help='Duration of the long break'
+)
+@click.option(
+    '-L', '--long-message',
+    default='Give yourself a long break',
+    help='Message to display during the long break'
+)
+@click.option(
+    '-N', '--no-long-break',
+    is_flag=True,
+    default=False,
+    help='Disable the long break at the end of the cycles'
+)
+@click.option(
+    '-r', '--repeat',
+    is_flag=True, 
+    help='Automatically repeat the cycles'
+)
+@click.option(
+    '-v', '--verbose',
+    is_flag=True, 
+    help='Displays notification titles in the terminal'
+)
+def main(
+    message: str,
+    cycles: int,
+    duration: str,
 
+    break_duration: str,
+    break_message: str,
 
-    stop_message = args.stop_message.format(stop_duration=args.stop_duration)
-    long_message = args.long_message.format(long_duration=args.long_duration)
+    long_duration: str,
+    long_message: str,
 
-    while True:
-        for current_cycle in range(1, args.cycles + 1):
-            message = args.message.format(
-                current_cycle=current_cycle,
-                cycles=args.cycles,
-                short_duration=args.short_duration
-            )
+    no_long_break: bool,
+    repeat: bool,
+    verbose: bool,
+):
+    """
+    Simple pomodoro CLI on terminal.
+    """
 
-            notify(message)
-            wait(args.short_duration)
-            auto_pause()
+    if verbose:
+        click.echo(f"Message: {message}")
+        click.echo(f"Cycles: {cycles}")
+        click.echo(f"Duration: {duration}")
 
-            notify(stop_message)
-            wait(args.stop_duration)
-            auto_pause()
+        click.echo(f"Break Duration: {break_duration}")
+        click.echo(f"Break Message: {break_message}")
 
-        if args.no_long_break:
-            notify(long_message)
-            wait(args.long_duration)
+        click.echo(f"Long Duration: {long_duration}")
+        click.echo(f"Long Message: {long_message}")
 
-        if not args.repeat: break
+        click.echo(f"No Long Break: {no_long_break}")
+        click.echo(f"Repeat: {repeat}")
+        click.echo(f"Verbose: {verbose}")
+        click.echo()
 
+    for current_cycle in range(1, cycles + 1):
+        def print_task_duration(rest_time: str):
+            print_message(message, current_cycle, cycles, rest_time)
+
+        def print_break_duration(rest_time: str):
+            print_message(break_message, current_cycle, cycles, rest_time, bg='cyan')
+
+        countdown(duration, print_task_duration)
+        countdown(break_duration, print_break_duration)
+
+    def print_long_duration(rest_time: str):
+        print_message(long_message, cycles, cycles, rest_time, bg='white')
+
+    if not no_long_break:
+        countdown(long_duration, print_long_duration)
+
+    if repeat: main()
 
 if __name__ == "__main__":
     main()
