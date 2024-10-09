@@ -1,6 +1,6 @@
 import time
 
-from times.lib import duration_to_seconds, timedelta
+from times.lib import duration_to_seconds, play, timedelta
 
 import click
 
@@ -121,13 +121,17 @@ def main(
         def print_break_duration(rest_time: str):
             print_message(break_message, current_cycle, cycles, rest_time, bg='cyan')
 
+        play('focus.mp3')
         countdown(duration, print_task_duration)
+
+        play('break.mp3')
         countdown(break_duration, print_break_duration)
 
     def print_long_duration(rest_time: str):
         print_message(long_message, cycles, cycles, rest_time, bg='white')
 
     if not no_long_break:
+        play('long-break.mp3')
         countdown(long_duration, print_long_duration)
 
     if repeat: main()

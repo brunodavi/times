@@ -1,5 +1,16 @@
 from re import match
 from datetime import timedelta
+from pathlib import Path
+
+from playsound3 import playsound
+
+
+assets_dir = Path(__file__).resolve().parent.parent.parent / 'assets'
+
+
+def play(sound: str):
+    sound_path = str(assets_dir / sound)
+    playsound(sound_path)
 
 
 def duration_to_timedelta(duration: str):
