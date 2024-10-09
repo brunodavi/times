@@ -1,10 +1,12 @@
 from re import match
 from datetime import timedelta
+from functools import cache
 from pathlib import Path
 
 from playsound3 import playsound
 
 
+@cache
 def get_assets():
     this_path = Path(__file__).resolve().parent
     assets_dir = this_path / 'assets'
