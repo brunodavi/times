@@ -25,6 +25,3 @@ distribution = true
 
 [tool.pdm.scripts]
 test = 'python -m unittest discover -vvv'
-
-[tool.pdm.build]
-source-includes = ["assets/"]
