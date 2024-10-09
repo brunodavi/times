@@ -26,6 +26,7 @@ Options:
   -l, --long-duration TEXT   Duration of the long break
   -L, --long-message TEXT    Message to display during the long break
   -N, --no-long-break        Disable the long break at the end of the cycles
+  -p, --pause                Automatically pause each interval
   -r, --repeat               Automatically repeat the cycles
   -v, --verbose              Displays notification titles in the terminal
   --help                     Show this message and exit.
