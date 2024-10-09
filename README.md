@@ -1,6 +1,9 @@
 # TIMES
 Simple pomodoro cli on terminal
 
+## Demo
+[demo.webm](https://github.com/user-attachments/assets/95176cd1-b8db-4e2b-a6f2-829e6d375494)
+
 
 ## Install
 ```
@@ -30,7 +33,7 @@ Options:
 
 ### Examples
 ```sh
-$ t --message Work --duration 30m --break_duration 10m --no_long_break
+$ t --message Work --duration 30m --break-duration 10m --no-long-break
 ```
 
 OR
