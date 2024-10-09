@@ -5,10 +5,19 @@ from pathlib import Path
 from playsound3 import playsound
 
 
-assets_dir = Path(__file__).resolve().parent.parent.parent / 'assets'
+def get_assets():
+    this_path = Path(__file__).resolve().parent
+    assets_dir = this_path / 'assets'
+
+    while not assets_dir.exists():
+        assets_dir = assets_dir.parent.parent
+        assets_dir = assets_dir / 'assets'
+
+    return assets_dir
 
 
 def play(sound: str):
+    assets_dir = get_assets()
     sound_path = str(assets_dir / sound)
     playsound(sound_path)
 
